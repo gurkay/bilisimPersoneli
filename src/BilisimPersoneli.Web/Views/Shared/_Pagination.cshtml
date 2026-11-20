@@ -1,0 +1,88 @@
+@model PaginationUiModel
+@{
+    var sizeOptions = PaginationDefaults.PageSizeOptions;
+    string BuildUrl(int page)
+    {
+        var dict = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+        {
+            [Model.PageParam] = page.ToString(),
+            [Model.PageSizeParam] = Model.PageSize.ToString()
+        };
+
+        foreach (var pair in Model.ExtraQuery)
+        {
+            if (string.IsNullOrEmpty(pair.Value))
+                continue;
+            if (pair.Key.Equals(Model.PageParam, StringComparison.OrdinalIgnoreCase) ||
+                pair.Key.Equals(Model.PageSizeParam, StringComparison.OrdinalIgnoreCase))
+                continue;
+            dict[pair.Key] = pair.Value;
+        }
+
+        return Url.Action(null, dict)!;
+    }
+}
+
+@if (Model.TotalCount > 0)
+{
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+        <form method="get" class="d-flex align-items-center gap-2">
+            @foreach (var pair in Model.ExtraQuery)
+            {
+                if (!string.IsNullOrEmpty(pair.Value) &&
+                    !pair.Key.Equals(Model.PageParam, StringComparison.OrdinalIgnoreCase) &&
+                    !pair.Key.Equals(Model.PageSizeParam, StringComparison.OrdinalIgnoreCase))
+                {
+                    <input type="hidden" name="@pair.Key" value="@pair.Value" />
+                }
+            }
+            <input type="hidden" name="@Model.PageParam" value="1" />
+            <label class="form-label mb-0 small text-muted" for="pageSize-@Model.PageSizeParam">Satır</label>
+            <select id="pageSize-@Model.PageSizeParam"
+                    class="form-select form-select-sm"
+                    style="width: auto;"
+                    name="@Model.PageSizeParam"
+                    onchange="this.form.submit()">
+                @foreach (var size in sizeOptions)
+                {
+                    if (size == Model.PageSize)
+                    {
+                        <option value="@size" selected>@size</option>
+                    }
+                    else
+                    {
+                        <option value="@size">@size</option>
+                    }
+                }
+            </select>
+            <span class="small text-muted">
+                Toplam @Model.TotalCount kayıt · Sayfa @Model.Page / @(Model.TotalPages == 0 ? 1 : Model.TotalPages)
+            </span>
+        </form>
+
+        <nav aria-label="Sayfalama">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item @(Model.HasPrevious ? null : "disabled")">
+                    @if (Model.HasPrevious)
+                    {
+                        <a class="page-link" href="@BuildUrl(Model.Page - 1)">Önceki</a>
+                    }
+                    else
+                    {
+                        <span class="page-link">Önceki</span>
+                    }
+                </li>
+                <li class="page-item @(Model.HasNext ? null : "disabled")">
+                    @if (Model.HasNext)
+                    {
+                        <a class="page-link" href="@BuildUrl(Model.Page + 1)">Sonraki</a>
+                    }
+                    else
+                    {
+                        <span class="page-link">Sonraki</span>
+                    }
+                </li>
+            </ul>
+        </nav>
+    </div>
+}

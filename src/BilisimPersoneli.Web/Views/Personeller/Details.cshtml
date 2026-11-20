@@ -1,0 +1,25 @@
+@model PersonelDto
+@{
+    ViewData["Title"] = "Personel Detay";
+}
+
+<h2>Personel Detay</h2>
+<dl class="row">
+    <dt class="col-sm-3">Ad Soyad</dt>
+    <dd class="col-sm-9">@Model.Ad @Model.Soyad</dd>
+    <dt class="col-sm-3">E-posta</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+    <dt class="col-sm-3">Telefon</dt>
+    <dd class="col-sm-9">@Model.Telefon</dd>
+    <dt class="col-sm-3">Maaş</dt>
+    <dd class="col-sm-9">@Model.Maas.ToString("N2") TL</dd>
+    <dt class="col-sm-3">İşe Giriş</dt>
+    <dd class="col-sm-9">@Model.IseGirisTarihi.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-3">Departman</dt>
+    <dd class="col-sm-9">@Model.DepartmanAd</dd>
+</dl>
+@if (User.IsInRole(AppRoles.Admin) || User.IsInRole(AppRoles.Yonetici) || User.IsInRole(AppRoles.Isletmen))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+}
+<a asp-action="Index" class="btn btn-secondary">Liste</a>

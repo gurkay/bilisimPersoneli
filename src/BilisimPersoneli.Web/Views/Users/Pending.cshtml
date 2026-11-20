@@ -1,0 +1,54 @@
+@model IReadOnlyList<UserListItemDto>
+@{
+    ViewData["Title"] = "Kayıt Onayları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Onay Bekleyen Kayıtlar</h2>
+    @if (User.IsInRole(AppRoles.Admin))
+    {
+        <a class="btn btn-outline-secondary" asp-action="Index">Tüm Kullanıcılar</a>
+    }
+</div>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>E-posta</th>
+            <th>Personel</th>
+            <th>Departman</th>
+            <th>Roller</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var u in Model)
+    {
+        <tr>
+            <td>@u.Email</td>
+            <td>@(u.PersonelAdSoyad ?? "-")</td>
+            <td>@(u.DepartmanAd ?? "-")</td>
+            <td>@string.Join(", ", u.Roles)</td>
+            <td class="text-end text-nowrap">
+                <form asp-action="Approve" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@u.Id" />
+                    <input type="hidden" name="returnAction" value="Pending" />
+                    <button type="submit" class="btn btn-sm btn-success">Onayla</button>
+                </form>
+                <form asp-action="Reject" method="post" class="d-inline" onsubmit="return confirm('Kayıt silinecek. Emin misiniz?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@u.Id" />
+                    <input type="hidden" name="returnAction" value="Pending" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Reddet</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">Onay bekleyen kayıt yok.</p>
+}

@@ -1,0 +1,12 @@
+@model PersonelDto
+@{
+    ViewData["Title"] = "Personel Sil";
+}
+
+<h2>Personel Sil</h2>
+<p>@Model.Ad @Model.Soyad kaydını silmek istediğinize emin misiniz?</p>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

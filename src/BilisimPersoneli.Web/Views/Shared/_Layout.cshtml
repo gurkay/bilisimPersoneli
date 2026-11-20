@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Bilişim Personeli</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Bilişim Personeli</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole(AppRoles.Admin))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Departmanlar" asp-action="Index">Departmanlar</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Personeller" asp-action="Index">Personeller</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Izinler" asp-action="Index">İzinler</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Izinler" asp-action="Onaylar">İzin Onayları</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Kullanıcılar</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Pending">Kayıt Onayları</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="AuditLogs" asp-action="Index">Audit Log</a></li>
+                            }
+                            else if (User.IsInRole(AppRoles.Yonetici))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Personeller" asp-action="Index">Personeller</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Izinler" asp-action="Index">İzinler</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Izinler" asp-action="Onaylar">İzin Onayları</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Kullanıcılar</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Pending">Kayıt Onayları</a></li>
+                            }
+                            else if (User.IsInRole(AppRoles.Isletmen))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Departmanlar" asp-action="Index">Departmanlar</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Personeller" asp-action="Index">Personeller</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Izinler" asp-action="Index">İzinler</a></li>
+                            }
+                            else if (User.IsInRole(AppRoles.Personel))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Izinler" asp-action="Index">İzinlerim</a></li>
+                            }
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item"><span class="navbar-text text-white-50 me-2">@User.Identity.Name</span></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="ChangePassword">Şifre Değiştir</a></li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-light">Çıkış</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Giriş</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Kayıt Ol</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

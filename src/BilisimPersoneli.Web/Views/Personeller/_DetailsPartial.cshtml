@@ -1,0 +1,16 @@
+@model PersonelDto
+
+<dl class="row mb-0">
+    <dt class="col-sm-4">Ad Soyad</dt>
+    <dd class="col-sm-8">@Model.Ad @Model.Soyad</dd>
+    <dt class="col-sm-4">E-posta</dt>
+    <dd class="col-sm-8">@Model.Email</dd>
+    <dt class="col-sm-4">Telefon</dt>
+    <dd class="col-sm-8">@(Model.Telefon ?? "-")</dd>
+    <dt class="col-sm-4">Maaş</dt>
+    <dd class="col-sm-8">@Model.Maas.ToString("N2") TL</dd>
+    <dt class="col-sm-4">İşe Giriş</dt>
+    <dd class="col-sm-8">@Model.IseGirisTarihi.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-4">Departman</dt>
+    <dd class="col-sm-8">@(Model.DepartmanAd ?? "-")</dd>
+</dl>

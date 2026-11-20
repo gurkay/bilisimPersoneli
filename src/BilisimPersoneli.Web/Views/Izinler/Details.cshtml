@@ -1,0 +1,29 @@
+@model IzinDto
+@{
+    ViewData["Title"] = "İzin Detay";
+}
+
+<h2>İzin Detay</h2>
+<dl class="row">
+    <dt class="col-sm-3">Personel</dt>
+    <dd class="col-sm-9">@Model.PersonelAdSoyad</dd>
+    <dt class="col-sm-3">Başlangıç</dt>
+    <dd class="col-sm-9">@Model.BaslangicTarihi.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-3">Bitiş</dt>
+    <dd class="col-sm-9">@Model.BitisTarihi.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-3">Tür</dt>
+    <dd class="col-sm-9">@Model.IzinTuru</dd>
+    <dt class="col-sm-3">Durum</dt>
+    <dd class="col-sm-9">@Model.Durum</dd>
+    <dt class="col-sm-3">Açıklama</dt>
+    <dd class="col-sm-9">@Model.Aciklama</dd>
+    <dt class="col-sm-3">Onay Tarihi</dt>
+    <dd class="col-sm-9">@(Model.OnayTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "-")</dd>
+    <dt class="col-sm-3">Onay Notu</dt>
+    <dd class="col-sm-9">@(Model.OnayNotu ?? "-")</dd>
+</dl>
+@if (Model.Durum == IzinDurumu.Beklemede)
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+}
+<a asp-action="Index" class="btn btn-secondary">Liste</a>

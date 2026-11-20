@@ -1,0 +1,12 @@
+@model IzinDto
+@{
+    ViewData["Title"] = "İzin Sil";
+}
+
+<h2>İzin Sil</h2>
+<p>@Model.PersonelAdSoyad — @Model.BaslangicTarihi.ToString("dd.MM.yyyy") kaydını silmek istediğinize emin misiniz?</p>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

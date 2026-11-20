@@ -1,0 +1,137 @@
+@model DashboardDto
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var sharedQuery = new Dictionary<string, string?>
+    {
+        ["maasPage"] = Model.DepartmanMaasOzetleri.Page.ToString(),
+        ["maasPageSize"] = Model.DepartmanMaasOzetleri.PageSize.ToString(),
+        ["izinliPage"] = Model.IzinliPersoneller.Page.ToString(),
+        ["izinliPageSize"] = Model.IzinliPersoneller.PageSize.ToString(),
+        ["ortalamaPage"] = Model.OrtalamaUstuPersoneller.Page.ToString(),
+        ["ortalamaPageSize"] = Model.OrtalamaUstuPersoneller.PageSize.ToString()
+    };
+}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<section class="mb-5">
+    <h3 class="h5 mb-3">Departman Bazlı Maaş Özeti</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Departman</th>
+                <th class="text-end">Personel Sayısı</th>
+                <th class="text-end">Ortalama Maaş</th>
+                <th class="text-end">Toplam Maaş</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.DepartmanMaasOzetleri.TotalCount == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-muted">Henüz departman kaydı yok.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.DepartmanMaasOzetleri.Items)
+            {
+                <tr>
+                    <td>@item.DepartmanAd</td>
+                    <td class="text-end">@item.PersonelSayisi</td>
+                    <td class="text-end">@item.OrtalamaMaas.ToString("N2") TL</td>
+                    <td class="text-end">@item.ToplamMaas.ToString("N2") TL</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    @await Html.PartialAsync("_Pagination", PaginationUiModel.From(
+        Model.DepartmanMaasOzetleri,
+        pageParam: "maasPage",
+        pageSizeParam: "maasPageSize",
+        extraQuery: sharedQuery))
+</section>
+
+<section class="mb-5">
+    <h3 class="h5 mb-3">İzin Kaydı Bulunan Personeller</h3>
+    <p class="text-muted small">En az bir izin kaydı olan personeller listelenir; aynı personel yalnızca bir kez gösterilir.</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Departman</th>
+                <th class="text-end">İzin Kayıt Sayısı</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.IzinliPersoneller.TotalCount == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-muted">İzin kaydı bulunan personel yok.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.IzinliPersoneller.Items)
+            {
+                <tr>
+                    <td>@item.Ad</td>
+                    <td>@item.Soyad</td>
+                    <td>@item.DepartmanAd</td>
+                    <td class="text-end">@item.IzinKayitSayisi</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    @await Html.PartialAsync("_Pagination", PaginationUiModel.From(
+        Model.IzinliPersoneller,
+        pageParam: "izinliPage",
+        pageSizeParam: "izinliPageSize",
+        extraQuery: sharedQuery))
+</section>
+
+<section>
+    <h3 class="h5 mb-3">Departman Ortalamasının Üzerinde Maaş Alan Personeller</h3>
+    <p class="text-muted small">Maaşı, bağlı olduğu departmanın ortalama maaşından yüksek olan personeller listelenir. Departman bilgisi olmayan personeller hariç tutulur.</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Departman</th>
+                <th class="text-end">Maaş</th>
+                <th class="text-end">Departman Ortalama Maaş</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.OrtalamaUstuPersoneller.TotalCount == 0)
+        {
+            <tr>
+                <td colspan="5" class="text-muted">Ortalamanın üzerinde maaş alan personel yok.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.OrtalamaUstuPersoneller.Items)
+            {
+                <tr>
+                    <td>@item.Ad</td>
+                    <td>@item.Soyad</td>
+                    <td>@item.DepartmanAd</td>
+                    <td class="text-end">@item.Maas.ToString("N2") TL</td>
+                    <td class="text-end">@item.DepartmanOrtalamaMaas.ToString("N2") TL</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    @await Html.PartialAsync("_Pagination", PaginationUiModel.From(
+        Model.OrtalamaUstuPersoneller,
+        pageParam: "ortalamaPage",
+        pageSizeParam: "ortalamaPageSize",
+        extraQuery: sharedQuery))
+</section>

@@ -1,0 +1,122 @@
+@model PagedResult<PersonelDto>
+@{
+    ViewData["Title"] = "Personeller";
+    var isAdmin = User.IsInRole(AppRoles.Admin);
+    var canManage = isAdmin || User.IsInRole(AppRoles.Yonetici) || User.IsInRole(AppRoles.Isletmen);
+    var search = ViewBag.Search as string;
+    var departmanId = ViewBag.DepartmanId as int?;
+    var extra = new Dictionary<string, string?>
+    {
+        ["search"] = search,
+        ["departmanId"] = departmanId.HasValue && departmanId.Value > 0 ? departmanId.Value.ToString() : null
+    };
+}
+
+<div id="personelAjaxAlerts"></div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Personeller</h2>
+    @if (canManage)
+    {
+        <button type="button"
+                class="btn btn-primary js-personel-create"
+                data-url="@Url.Action("CreatePartial")">
+            Yeni Personel
+        </button>
+    }
+</div>
+
+<form method="get" class="row g-2 align-items-end mb-3">
+    <input type="hidden" name="page" value="1" />
+    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+    <div class="col-md-5">
+        <label class="form-label" for="search">Ad / Soyad</label>
+        <input id="search" class="form-control" type="search" name="search" value="@search" placeholder="Ad veya soyad ara..." />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="departmanId">Departman</label>
+        <select id="departmanId" class="form-select" name="departmanId" asp-items="ViewBag.Departmanlar">
+            <option value="">Tüm departmanlar</option>
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Filtrele</button>
+        <a class="btn btn-outline-secondary" asp-action="Index" asp-route-pageSize="@Model.PageSize">Temizle</a>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>E-posta</th>
+            <th>Departman</th>
+            <th>Maaş</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (Model.TotalCount == 0)
+    {
+        <tr>
+            <td colspan="5" class="text-muted">Kayıt bulunamadı.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Ad @item.Soyad</td>
+                <td>@item.Email</td>
+                <td>@item.DepartmanAd</td>
+                <td>@item.Maas.ToString("N2") TL</td>
+                <td class="text-end text-nowrap">
+                    <button type="button"
+                            class="btn btn-link btn-sm p-0 js-personel-details"
+                            data-url="@Url.Action("DetailsPartial", new { id = item.Id })">
+                        Detay
+                    </button>
+                    @if (canManage)
+                    {
+                        <text> | </text>
+                        <button type="button"
+                                class="btn btn-link btn-sm p-0 js-personel-edit"
+                                data-url="@Url.Action("EditPartial", new { id = item.Id })">
+                            Düzenle
+                        </button>
+                    }
+                    @if (isAdmin)
+                    {
+                        <text> | </text>
+                        <button type="button"
+                                class="btn btn-link btn-sm p-0 text-danger js-personel-delete"
+                                data-url="@Url.Action("DeletePartial", new { id = item.Id })">
+                            Sil
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_Pagination", PaginationUiModel.From(Model, extraQuery: extra))
+
+<div class="modal fade" id="personelModal" tabindex="-1" aria-labelledby="personelModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="personelModalTitle">Personel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body" id="personelModalBody"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/personeller.js" asp-append-version="true"></script>
+}

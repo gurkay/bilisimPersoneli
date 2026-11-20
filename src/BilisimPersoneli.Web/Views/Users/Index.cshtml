@@ -1,0 +1,87 @@
+@model IReadOnlyList<UserListItemDto>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    var search = ViewBag.Search as string;
+    var approved = ViewBag.Approved as bool?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Kullanıcı Yönetimi</h2>
+    <a class="btn btn-outline-warning" asp-action="Pending">Onay Bekleyenler</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="search" value="@search" class="form-control" placeholder="E-posta ara..." />
+    </div>
+    <div class="col-md-3">
+        <select name="approved" class="form-select">
+            <option value="" selected="@(approved == null ? "selected" : null)">Tümü</option>
+            <option value="true" selected="@(approved == true ? "selected" : null)">Onaylı</option>
+            <option value="false" selected="@(approved == false ? "selected" : null)">Bekleyen</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary">Filtrele</button>
+    </div>
+</form>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>E-posta</th>
+            <th>Personel</th>
+            <th>Departman</th>
+            <th>Durum</th>
+            <th>Roller</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var u in Model)
+    {
+        <tr>
+            <td>@u.Email</td>
+            <td>@(u.PersonelAdSoyad ?? "-")</td>
+            <td>@(u.DepartmanAd ?? "-")</td>
+            <td>
+                @if (u.IsApproved)
+                {
+                    <span class="badge bg-success">Onaylı</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Bekliyor</span>
+                }
+            </td>
+            <td>@string.Join(", ", u.Roles)</td>
+            <td class="text-end text-nowrap">
+                @if (!u.IsApproved)
+                {
+                    <form asp-action="Approve" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@u.Id" />
+                        <input type="hidden" name="returnAction" value="Index" />
+                        <button type="submit" class="btn btn-sm btn-success">Onayla</button>
+                    </form>
+                    <form asp-action="Reject" method="post" class="d-inline" onsubmit="return confirm('Kayıt silinecek. Emin misiniz?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@u.Id" />
+                        <input type="hidden" name="returnAction" value="Index" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Reddet</button>
+                    </form>
+                }
+                else if (User.IsInRole(AppRoles.Admin) || !u.Roles.Contains(AppRoles.Admin))
+                {
+                    <a class="btn btn-sm btn-primary" asp-action="Roles" asp-route-id="@u.Id">Rol</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">Kullanıcı bulunamadı.</p>
+}

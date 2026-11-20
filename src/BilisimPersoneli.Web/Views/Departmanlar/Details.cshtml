@@ -1,0 +1,14 @@
+@model DepartmanDto
+@{
+    ViewData["Title"] = "Departman Detay";
+}
+
+<h2>Departman Detay</h2>
+<dl class="row">
+    <dt class="col-sm-3">Ad</dt>
+    <dd class="col-sm-9">@Model.Ad</dd>
+    <dt class="col-sm-3">Açıklama</dt>
+    <dd class="col-sm-9">@Model.Aciklama</dd>
+</dl>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+<a asp-action="Index" class="btn btn-secondary">Liste</a>

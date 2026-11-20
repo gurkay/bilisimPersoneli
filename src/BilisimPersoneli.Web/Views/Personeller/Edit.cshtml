@@ -1,0 +1,17 @@
+@model PersonelUpdateDto
+@{
+    ViewData["Title"] = "Personel Düzenle";
+}
+
+<h2>Personel Düzenle</h2>
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="IdentityUserId" />
+    @{ ViewData["PasswordOptional"] = ViewData["PasswordOptional"] ?? true; }
+    <partial name="_PersonelForm" />
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
